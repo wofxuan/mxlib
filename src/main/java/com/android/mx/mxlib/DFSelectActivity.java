@@ -30,7 +30,7 @@ public class DFSelectActivity extends AppCompatActivity implements View.OnClickL
     public final static int FileType = 1;
     public final static int DirType = 2;
 
-    private static String openDirHis;//记录上次打开的目录
+    private static String openDirHis = "";//记录上次打开的目录
     private static List<String> openHisList = new ArrayList<String>();//记录打开的文件.
 
     FileListAdapter Adapter;
@@ -82,11 +82,15 @@ public class DFSelectActivity extends AppCompatActivity implements View.OnClickL
     };
 
     public static String getOpenDirHis() {
-        return openDirHis;
+        if (openDirHis.equals("")) {
+            return getSDPath();
+        } else {
+            return openDirHis;
+        }
     }
 
-    public static void setOpenDirHis(String openDirHis) {
-        openDirHis = openDirHis;
+    public static void setOpenDirHis(String openDir) {
+        openDirHis = openDir;
     }
 
     //加入打开历史
@@ -215,7 +219,7 @@ public class DFSelectActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private String getSDPath() {
+    private static String getSDPath() {
         File sdDir = null;
         boolean sdCardExist = Environment.getExternalStorageState()
                 .equals(Environment.MEDIA_MOUNTED);   //判断sd卡是否存在
