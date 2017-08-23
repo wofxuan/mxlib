@@ -1,10 +1,15 @@
 package com.android.mx.mxlib;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,9 +86,9 @@ public class DFSelectActivity extends AppCompatActivity implements View.OnClickL
         }
     };
 
-    public static String getOpenDirHis() {
+    public static String getOpenDirHis(Context context) {
         if (openDirHis.equals("")) {
-            return getSDPath();
+            return getSDPath(context);
         } else {
             return openDirHis;
         }
@@ -219,7 +224,7 @@ public class DFSelectActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private static String getSDPath() {
+    private static String getSDPath(Context context) {
         File sdDir = null;
         boolean sdCardExist = Environment.getExternalStorageState()
                 .equals(Environment.MEDIA_MOUNTED);   //判断sd卡是否存在
@@ -229,14 +234,25 @@ public class DFSelectActivity extends AppCompatActivity implements View.OnClickL
         if (sdDir == null) {
             return null;
         }
+        getPermission(context);
         return sdDir.toString();
+    }
 
+    private static void getPermission(Context context)
+    {
+        int permissionCheck1 = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int permissionCheck2 = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck1 != PackageManager.PERMISSION_GRANTED || permissionCheck2 != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity)context,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                    124);
+        }
     }
 
     private String getRootDir() {
         String root = "/";
 
-        path = getSDPath();
+        path = getSDPath(this);
         if (path == null)
             path = "/";
 
